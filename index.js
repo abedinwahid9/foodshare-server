@@ -38,6 +38,7 @@ async function run() {
       console.log(newFood);
       const result = await foodCollection.insertOne(newFood);
       res.send(result);
+      console.log(resut);
     });
 
     // Connect the client to the server	(optional starting in v4.7)
