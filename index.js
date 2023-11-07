@@ -36,6 +36,9 @@ async function run() {
       const newFood = req.body;
 
       console.log(newFood);
+      console.log(newFood);
+      console.log(newFood);
+      console.log(newFood);
       const result = await foodCollection.insertOne(newFood);
       res.send(result);
     });
