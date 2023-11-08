@@ -23,9 +23,19 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const foodCollection = client.db("foodDB").collection("foodCollection");
+    const foodReqCollection = client
+      .db("foodDB")
+      .collection("foodReqCollection");
 
     app.get("/foods", async (req, res) => {
       const cursor = await foodCollection.find();
+
+      const result = await cursor.toArray();
+
+      res.send(result);
+    });
+    app.get("/reqfood", async (req, res) => {
+      const cursor = await foodReqCollection.find();
 
       const result = await cursor.toArray();
 
@@ -42,7 +52,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/foods/email/:email", async (req, res) => {
+    app.get("/foods/:email", async (req, res) => {
       const email = req.params.email;
 
       const query = { email: email };
@@ -59,6 +69,15 @@ async function run() {
       console.log(newFood);
 
       const result = await foodCollection.insertOne(newFood);
+      res.send(result);
+    });
+
+    app.post("/reqfood", async (req, res) => {
+      const newFood = req.body;
+
+      console.log(newFood);
+
+      const result = await foodReqCollection.insertOne(newFood);
       res.send(result);
     });
 
