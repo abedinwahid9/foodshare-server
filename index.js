@@ -34,8 +34,36 @@ async function run() {
 
       res.send(result);
     });
+
+    app.get("/foods/update/:id", async (req, res) => {
+      const id = req.params.id;
+
+      const query = { _id: new ObjectId(id) };
+
+      const result = await foodCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.get("/reqfood/:email", async (req, res) => {
+      const email = req.params.email;
+      let query = { email: email };
+
+      const cursor = await foodReqCollection.find(query);
+
+      const result = await cursor.toArray();
+
+      res.send(result);
+    });
+
     app.get("/reqfood", async (req, res) => {
-      const cursor = await foodReqCollection.find();
+      console.log(req.query);
+
+      let query = {};
+      if (req.query?.email) {
+        query = { email: req.query.email, id: req.query.sort };
+      }
+
+      const cursor = await foodReqCollection.find(query);
 
       const result = await cursor.toArray();
 
@@ -78,6 +106,28 @@ async function run() {
       console.log(newFood);
 
       const result = await foodReqCollection.insertOne(newFood);
+      res.send(result);
+    });
+
+    app.put("/foods/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateFood = req.body;
+
+      const cart = {
+        $set: {
+          foodName: updateFood.foodName,
+          Foodimageurl: updateFood.Foodimageurl,
+          FoodQuantity: updateFood.FoodQuantity,
+          ExpiredDate: updateFood.ExpiredDate,
+          Pickuplocation: updateFood.Pickuplocation,
+          AdditionalNotes: updateFood.AdditionalNotes,
+        },
+      };
+
+      const result = await foodCollection.updateOne(filter, cart, options);
+
       res.send(result);
     });
 
